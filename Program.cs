@@ -1,7 +1,18 @@
 ﻿using static System.Console;
+using static System.Net.Mime.MediaTypeNames;
 
-//Exercise1();
+Exercise1();
 Exercise2();
+
+Console.Write("Введите строку для шифрования: ");
+string input = Console.ReadLine();
+
+Console.Write("Введите сдвиг: ");
+int shift = int.Parse(Console.ReadLine());
+
+string encrypted = Exercise3(input, shift);
+
+Console.WriteLine($"Зашифрованная строка: {encrypted}");
 
 void Exercise1()
 {
@@ -136,3 +147,25 @@ void Exercise2()
     Console.WriteLine($"\nМинимум: {min}, максимум: {max}");
     Console.WriteLine($"Сумма между ними: {sum}");
 }
+
+string Exercise3(string text, int shift)
+{
+    char[] result = new char[text.Length];
+
+    for (int i = 0; i < text.Length; i++)
+    {
+        char c = text[i];
+        if (char.IsLetter(c))
+        {
+            char baseChar = char.IsUpper(c) ? 'A' : 'a';
+            result[i] = (char)((c - baseChar + shift) % 26 + baseChar);
+        }
+        else
+        {
+            result[i] = c;
+        }
+    }
+
+    return new string(result);
+}
+
