@@ -1,18 +1,37 @@
-﻿using static System.Console;
+﻿using System.Text.RegularExpressions;
+using static System.Console;
 using static System.Net.Mime.MediaTypeNames;
 
 Exercise1();
 Exercise2();
+//Для 3 задания
+//Console.Write("Введите строку для шифрования: ");
+//string input = Console.ReadLine();
 
-Console.Write("Введите строку для шифрования: ");
-string input = Console.ReadLine();
+//Console.Write("Введите сдвиг: ");
+//int shift = int.Parse(Console.ReadLine());
 
-Console.Write("Введите сдвиг: ");
-int shift = int.Parse(Console.ReadLine());
+//string encrypted = Exercise3(input, shift);
 
-string encrypted = Exercise3(input, shift);
+//Console.WriteLine($"Зашифрованная строка: {encrypted}");
 
-Console.WriteLine($"Зашифрованная строка: {encrypted}");
+//Для 5 задания
+//Console.Write("Введите выражение (например: 5 + 2 - 3 + 10): ");
+//string input = Console.ReadLine();
+
+//int result = Exercise5(input);
+//Console.WriteLine($"Результат: {result}");
+
+//Для 6 задания
+
+//Console.WriteLine("Введите текст:");
+//string text = Console.ReadLine();
+
+//string result = Exercise6(text);
+//Console.WriteLine("\nРезультат:");
+//Console.WriteLine(result);
+
+Exercise7();
 
 void Exercise1()
 {
@@ -169,3 +188,59 @@ string Exercise3(string text, int shift)
     return new string(result);
 }
 
+int Exercise5(string expression)
+{
+    expression = expression.Replace(" ", "");
+    MatchCollection matches = Regex.Matches(expression, @"[-+]?\d+");
+
+    int sum = 0;
+    foreach (Match match in matches)
+    {
+        sum += int.Parse(match.Value);
+    }
+    return sum;
+}
+
+string Exercise6(string input)
+{
+    string[] sentences = input.Split(new[] { '.', '!', '?' }, StringSplitOptions.None);
+    string[] separators = Regex.Split(input, @"[^.!?]*[.!?]");
+
+    for (int i = 0; i < sentences.Length; i++)
+    {
+        sentences[i] = sentences[i].TrimStart();
+        if (!string.IsNullOrWhiteSpace(sentences[i]))
+            sentences[i] = char.ToUpper(sentences[i][0]) + sentences[i].Substring(1);
+    }
+
+    return string.Join(". ", sentences).Trim() + ".";
+}
+
+void Exercise7()
+{
+    string[] badWords = { "грубиян", "дурак", "мат", "брань" };
+
+    Console.WriteLine("Введите текст:");
+
+    string input = Console.ReadLine();
+
+    string pattern = @"\b(" + string.Join("|", badWords) + @")\b";
+    Regex regex = new Regex(pattern, RegexOptions.IgnoreCase);
+
+    HashSet<string> foundWords = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+    int replacementCount = 0;
+
+    string result = regex.Replace(input, match =>
+    {
+        foundWords.Add(match.Value.ToLower());
+        replacementCount++;
+        return new string('*', match.Value.Length);
+    });
+
+    Console.WriteLine("\n--- Результат ---");
+    Console.WriteLine("Обработанный текст:\n" + result);
+
+    Console.WriteLine("\n--- Статистика ---");
+    Console.WriteLine($"Заменено слов: {replacementCount}");
+    Console.WriteLine("Список заменённых слов: " + (foundWords.Count > 0 ? string.Join(", ", foundWords) : "нет"));
+}
